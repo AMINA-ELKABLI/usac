@@ -7,6 +7,7 @@ public record PlayResponseDTO(
         String name,
         String description,
         LocalDateTime schedule,
-        Long matchId
+        Long matchId,
+        int maxCapacity
 ) {
 }

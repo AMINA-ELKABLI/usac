@@ -20,6 +20,7 @@ public class Play {
     private String name;
     private String description;
     private LocalDateTime schedule; // Horaire de l'activité
+    private int maxCapacity;
 
     @ManyToMany
     @JoinTable(

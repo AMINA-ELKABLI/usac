@@ -7,7 +7,7 @@ import java.util.Optional;
 
 
 
-    public interface ChildService {
+    public interface IChildService {
         Child saveChild(Child child);
         List<Child> getAllChildren();
       Optional<Child>  getChildById(Long id);
