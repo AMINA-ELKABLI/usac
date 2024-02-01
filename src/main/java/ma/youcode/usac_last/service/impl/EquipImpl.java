@@ -26,4 +26,9 @@ public class EquipImpl implements IEquip {
     public void deleteEquip(Long id) {
 
     }
+
+    @Override
+    public Equip updateEquip(Equip equip) {
+        return null;
+    }
 }
