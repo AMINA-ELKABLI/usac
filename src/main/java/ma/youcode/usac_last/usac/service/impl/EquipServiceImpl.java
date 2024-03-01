@@ -5,14 +5,14 @@ import ma.youcode.usac_last.usac.exception.InvalidDataException;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
 import ma.youcode.usac_last.usac.model.entities.Equip;
 import ma.youcode.usac_last.usac.repository.EquipRepository;
-import ma.youcode.usac_last.usac.service.IEquip;
+import ma.youcode.usac_last.usac.service.IEquipService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 @Service
 @AllArgsConstructor
-public class EquipImpl implements IEquip {
+public class EquipServiceImpl implements IEquipService {
     private final EquipRepository equipRepository;
     @Override
     public Equip saveEquip(Equip equip) {

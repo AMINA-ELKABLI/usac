@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
+        ex.printStackTrace();
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex, "UNEXPECTED_ERROR", request);
     }
     @ResponseStatus(HttpStatus.FORBIDDEN)

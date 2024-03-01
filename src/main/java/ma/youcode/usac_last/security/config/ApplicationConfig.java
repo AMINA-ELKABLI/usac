@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import ma.youcode.usac_last.security.user.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,6 +12,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,5 +46,16 @@ public class ApplicationConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    @Bean
+    CorsConfigurationSource corsConfigurationSource()  {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4201/"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Accept", "Origin", "Content-Type", "Depth", "User-Agent", "If-Modified-Since,",
+                "Cache-Control", "Authorization", "X-Req", "X-File-Size", "X-Requested-With", "X-File-Name"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 }

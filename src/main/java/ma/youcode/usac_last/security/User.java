@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ma.youcode.usac_last.security.token.Token;
 import ma.youcode.usac_last.security.user.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,15 +28,17 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
-    private String lastName;
-
+    private String firstname;
+    private String lastname;
     @Column(unique = true)
     private String email;
     private String password;
 
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "user")
+    private List<Token> tokens;
+   // private boolean enable;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -66,6 +69,7 @@ public class User implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
 
     @Override
     public boolean isEnabled() {

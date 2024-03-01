@@ -22,7 +22,7 @@ public record ChildCreateUpdateDTO(
         @NotBlank(message = "Guardian name is required")
         String guardianName,
 
-        @Pattern(regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$", message = "Invalid guardian contact")
+
         String guardianContact,
 
         @NotNull(message = "Equip ID is required")

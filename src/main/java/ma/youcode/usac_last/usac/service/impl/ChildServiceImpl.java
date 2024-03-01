@@ -39,8 +39,8 @@ public class ChildServiceImpl implements IChildService {
     }
 
     @Override
-    public Optional<Child> getChildById(Long id) {
-        return childRepository.findById(id);
+    public Optional<Child> getChildByName(String name) {
+        return childRepository.findByName(name);
     }
 
     @Override

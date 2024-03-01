@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import ma.youcode.usac_last.security.token.TokenRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,7 +21,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter  extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-
+    private final TokenRepository tokenRepository;
     @Override
     protected void doFilterInternal( @NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -35,11 +36,13 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
             return;
         }
         jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(jwt);
+        userEmail = jwtService.extractUserName(jwt);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-
-            if (jwtService.isTokenValid(jwt, userDetails) ) {
+              var isTokenValid = tokenRepository.findByToken(jwt)
+                      .map(t->!t.isExpired() && !t.isRevoked())
+                      .orElse(false);
+            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,
@@ -48,9 +51,15 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
+                System.out.println("user setted in context ");
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+            }else{
+                System.out.println("nooo");
             }
+
         }
+        filterChain.doFilter(request, response);
 
 
 

@@ -1,5 +1,7 @@
 package ma.youcode.usac_last.security.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,4 +26,18 @@ public class AuthenticationController {
     ) {
         return ResponseEntity.ok(service.authenticate(request));
     }
+
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ){
+        try {
+            service.refreshToken(request, response);
+        }catch(Exception e){
+
+        }
+    }
+
+
 }

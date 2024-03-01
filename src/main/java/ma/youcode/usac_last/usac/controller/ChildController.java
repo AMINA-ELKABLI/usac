@@ -1,5 +1,6 @@
 package ma.youcode.usac_last.usac.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.youcode.usac_last.usac.mapper.ChildMapper;
 import ma.youcode.usac_last.usac.model.dto.ChildCreateUpdateDTO;
@@ -21,13 +22,17 @@ import java.util.stream.Collectors;
 public class ChildController {
     private final IChildService childService;
     private final ChildMapper childMapper;
-    @PostMapping
-    public ResponseEntity<ChildResponseDTO> saveChild(@RequestBody ChildCreateUpdateDTO childCreateUpdateDTO) {
+
+    @PostMapping()
+    public ResponseEntity<ChildResponseDTO> saveChild(@RequestBody @Valid ChildCreateUpdateDTO childCreateUpdateDTO) {
         Child child =  childMapper.toEntity(childCreateUpdateDTO);
         Child savedChild = childService.saveChild(child);
         ChildResponseDTO childResponseDTO =  childMapper.toDTO(savedChild);
         return ResponseEntity.status(HttpStatus.CREATED).body(childResponseDTO);
+
     }
+
+
     @GetMapping
     public ResponseEntity<List<ChildResponseDTO>> getAllChildren() {
         List<Child> children = childService.getAllChildren();
@@ -37,10 +42,10 @@ public class ChildController {
         return ResponseEntity.ok(childResponseDTOs);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ChildResponseDTO> getChildById(@PathVariable Long id) {
-        Child child = childService.getChildById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Enfant introuvable avec l'ID : " + id));
+    @GetMapping("/{name}")
+    public ResponseEntity<ChildResponseDTO> getChildByName(@PathVariable String name) {
+        Child child = childService.getChildByName(name)
+                .orElseThrow(() -> new ResourceNotFoundException("Enfant introuvable avec name : " + name));
         ChildResponseDTO childResponseDTO = childMapper.toDTO(child);
         return ResponseEntity.ok(childResponseDTO);
     }

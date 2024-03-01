@@ -19,10 +19,10 @@ public class Child {
     private Long id;
     private String name;
     private LocalDate dateOfBirth;
-    private String gender; // Peut être "Male", "Female", "Other"
+    private String gender;
     private String address;
-    private String guardianName; // Nom du tuteur
-    private String guardianContact; // Contact du tuteur
+    private String guardianName;
+    private String guardianContact;
 
 
     @ManyToMany(mappedBy = "children")

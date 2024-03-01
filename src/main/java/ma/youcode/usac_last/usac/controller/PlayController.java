@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 public class PlayController {
     private final IPlayService playService;
     private final PlayMapper playMapper;
-    @PostMapping("/")
+    @PostMapping()
     public ResponseEntity<PlayResponseDTO> createPlay(@RequestBody PlayCreateUpdateDTO playDTO) {
         Play play = playMapper.toEntity(playDTO);
         Play savedPlay = playService.savePlay(play);
