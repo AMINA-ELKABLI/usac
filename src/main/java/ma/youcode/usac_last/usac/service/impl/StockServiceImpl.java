@@ -1,7 +1,9 @@
 package ma.youcode.usac_last.usac.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import ma.youcode.usac_last.usac.model.entities.Stock;
+import ma.youcode.usac_last.usac.model.enums.MaterialCondition;
 import ma.youcode.usac_last.usac.repository.StockRepository;
 import ma.youcode.usac_last.usac.service.IStockService;
 import org.springframework.stereotype.Service;
@@ -45,8 +47,18 @@ public class StockServiceImpl implements IStockService {
     }
 
     @Override
-    public void deleteStock(Long id) {
-        stockRepository.findById(id).ifPresent(stock -> stockRepository.delete(stock));
-
+    public List<Stock> searchStocks(String materialName, String description, MaterialCondition condition, Integer quantity) {
+        return stockRepository.searchStocks(materialName, description, condition, quantity);
     }
+    @Override
+    public void deleteStock(Long id) {
+        Stock stock = stockRepository.findById(id).orElse(null);
+
+        if (stock != null) {
+            stockRepository.delete(stock);
+        } else {
+            throw new EntityNotFoundException("Stock with id " + id + " not found");
+        }
+    }
+
 }

@@ -15,6 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 import static ma.youcode.usac_last.security.user.Permission.*;
 import static ma.youcode.usac_last.security.user.Role.ADMIN;
@@ -36,7 +41,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors()
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .authorizeHttpRequests( auth -> auth
                         .requestMatchers("/api/v1/auth/**")
@@ -62,5 +67,17 @@ public class SecurityConfig {
 
 
         return http.build();
+    }
+    @Bean
+    CorsConfigurationSource corsConfigurationSource()  {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4201"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST","DELETE"));
+        configuration.setAllowedHeaders(Arrays.asList(
+                "Accept", "Origin", "Content-Type", "Depth", "User-Agent", "If-Modified-Since,",
+                "Cache-Control", "Authorization", "X-Req", "X-File-Size", "X-Requested-With", "X-File-Name"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

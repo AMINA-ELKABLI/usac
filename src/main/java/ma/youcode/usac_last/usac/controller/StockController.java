@@ -5,6 +5,7 @@ import ma.youcode.usac_last.usac.model.dto.StockCreateUpdateDTO;
 import ma.youcode.usac_last.usac.model.dto.Response.StockResponseDTO;
 import ma.youcode.usac_last.usac.model.entities.Stock;
 import ma.youcode.usac_last.usac.mapper.StockMapper;
+import ma.youcode.usac_last.usac.model.enums.MaterialCondition;
 import ma.youcode.usac_last.usac.service.IStockService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,8 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/stock")
+@CrossOrigin(origins = "http://localhost:4201")
+
 @AllArgsConstructor
 public class StockController {
     private final IStockService stockService;
@@ -56,4 +59,17 @@ public class StockController {
         stockService.deleteStock(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<StockResponseDTO>> searchStocks(@RequestParam(required = false) String materialName,
+                                                               @RequestParam(required = false) String description,
+                                                               @RequestParam(required = false) MaterialCondition condition,
+                                                               @RequestParam(required = false) Integer quantity) {
+        List<StockResponseDTO> response = stockService.searchStocks(materialName, description, condition, quantity)
+                .stream()
+                .map(stockMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
 }
