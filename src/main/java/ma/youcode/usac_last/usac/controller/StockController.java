@@ -7,6 +7,9 @@ import ma.youcode.usac_last.usac.model.entities.Stock;
 import ma.youcode.usac_last.usac.mapper.StockMapper;
 import ma.youcode.usac_last.usac.model.enums.MaterialCondition;
 import ma.youcode.usac_last.usac.service.IStockService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +26,11 @@ public class StockController {
     private final StockMapper stockMapper;
 
     @GetMapping
-    public ResponseEntity<List<StockResponseDTO>> getAllStocks() {
-        List<StockResponseDTO> response = stockService.getAllStocks().stream()
-                .map(stockMapper::toDTO)
-                .collect(Collectors.toList());
+    public ResponseEntity<Page<StockResponseDTO>> getAllStocks(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<StockResponseDTO> response = stockService.getAllStocks(pageable)
+                .map(stockMapper::toDTO);
         return ResponseEntity.ok(response);
     }
 

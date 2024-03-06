@@ -6,6 +6,8 @@ import ma.youcode.usac_last.usac.model.entities.Stock;
 import ma.youcode.usac_last.usac.model.enums.MaterialCondition;
 import ma.youcode.usac_last.usac.repository.StockRepository;
 import ma.youcode.usac_last.usac.service.IStockService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,9 +16,10 @@ import java.util.Optional;
 @AllArgsConstructor
 public class StockServiceImpl implements IStockService {
     private final StockRepository stockRepository;
+
     @Override
-    public List<Stock> getAllStocks() {
-        return stockRepository.findAll();
+    public Page<Stock> getAllStocks(Pageable pageable) {
+        return stockRepository.findAll(pageable);
     }
 
     @Override
