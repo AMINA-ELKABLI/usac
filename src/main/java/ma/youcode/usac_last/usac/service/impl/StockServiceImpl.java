@@ -20,9 +20,11 @@ public class StockServiceImpl implements IStockService {
     }
 
     @Override
+
     public Optional<Stock> getStockById(Long id) {
-        return Optional.empty();
+        return stockRepository.findById(id);
     }
+
 
     @Override
     public Stock createStock(Stock stock) {
@@ -43,7 +45,15 @@ public class StockServiceImpl implements IStockService {
     @Override
     public Stock updateStock(Long id, Stock stock) {
 
-        return null;
+        Stock existingStock = stockRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Stock with id " + id + " not found"));
+
+        existingStock.setMaterialName(stock.getMaterialName());
+        existingStock.setDescription(stock.getDescription());
+        existingStock.setCondition(stock.getCondition());
+        existingStock.setQuantity(stock.getQuantity());
+
+        return stockRepository.save(existingStock);
     }
 
     @Override

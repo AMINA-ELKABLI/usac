@@ -19,7 +19,7 @@ public class Match {
     private String name;
     private LocalDateTime matchDate;
     private String location;
-    private String type; // Type de match, par exemple, "Amical", "Compétition"
+    private String type;
 
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Play> plays = new HashSet<>();
