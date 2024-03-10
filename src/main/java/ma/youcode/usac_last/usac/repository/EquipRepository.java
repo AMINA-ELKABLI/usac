@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface EquipRepository extends JpaRepository<Equip,Long> {
     Optional<Equip> findByName(String name);
+    long count();
 }

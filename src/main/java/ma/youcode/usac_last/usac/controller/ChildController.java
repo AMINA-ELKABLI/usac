@@ -5,10 +5,14 @@ import lombok.RequiredArgsConstructor;
 import ma.youcode.usac_last.usac.mapper.ChildMapper;
 import ma.youcode.usac_last.usac.model.dto.ChildCreateUpdateDTO;
 import ma.youcode.usac_last.usac.model.dto.Response.ChildResponseDTO;
+import ma.youcode.usac_last.usac.model.dto.Response.StockResponseDTO;
 import ma.youcode.usac_last.usac.model.entities.Child;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
 import ma.youcode.usac_last.usac.service.IChildService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,12 +38,12 @@ public class ChildController {
 
 
     @GetMapping
-    public ResponseEntity<List<ChildResponseDTO>> getAllChildren() {
-        List<Child> children = childService.getAllChildren();
-        List<ChildResponseDTO> childResponseDTOs = children.stream()
-                .map(childMapper::toDTO)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(childResponseDTOs);
+    public ResponseEntity<Page<ChildResponseDTO>> getAllChil(@RequestParam(defaultValue = "0") int page,
+                                                               @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ChildResponseDTO> response = childService.getAllChildren(pageable)
+                .map(childMapper::toDTO);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{name}")

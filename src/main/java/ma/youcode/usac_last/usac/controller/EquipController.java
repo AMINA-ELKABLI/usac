@@ -19,8 +19,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/equip")
 @RequiredArgsConstructor
 public class EquipController {
-    private final IEquipService  equipService;
+    private final IEquipService equipService;
     private final EquipMapper equipMapper;
+
     @PostMapping
     public ResponseEntity<EquipResponseDTO> saveEquip(@RequestBody @Validated EquipCreateUpdateDTO equipCreateUpdateDTO) {
         Equip equip = equipMapper.toEntity(equipCreateUpdateDTO);
@@ -59,5 +60,11 @@ public class EquipController {
         Equip updatedEquip = equipService.updateEquip(equip);
         EquipResponseDTO equipResponseDTO = equipMapper.toDTO(updatedEquip);
         return ResponseEntity.ok(equipResponseDTO);
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<Long> getTotalEquips() {
+        long totalEquips = equipService.getTotalEquips();
+        return ResponseEntity.ok(totalEquips);
     }
 }

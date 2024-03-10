@@ -11,4 +11,5 @@ public interface IEquipService {
     Optional<Equip> getEquipByName(String name);
     void deleteEquip(Long id);
     Equip updateEquip(Equip equip);
+    long getTotalEquips();
 }

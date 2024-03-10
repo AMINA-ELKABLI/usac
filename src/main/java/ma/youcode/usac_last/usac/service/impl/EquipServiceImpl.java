@@ -67,4 +67,9 @@ public class EquipServiceImpl implements IEquipService {
 
         return equipRepository.save(existingEquip);
     }
+
+    @Override
+    public long getTotalEquips() {
+        return equipRepository.count();
+    }
 }

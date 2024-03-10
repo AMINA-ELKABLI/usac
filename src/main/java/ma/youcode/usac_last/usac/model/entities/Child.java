@@ -23,8 +23,6 @@ public class Child {
     private String address;
     private String guardianName;
     private String guardianContact;
-
-
     @ManyToMany(mappedBy = "children")
     private Set<Play> plays = new HashSet<>();
     @OneToMany(mappedBy = "child", cascade = CascadeType.ALL, orphanRemoval = true)

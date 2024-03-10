@@ -7,11 +7,12 @@ import ma.youcode.usac_last.usac.exception.ResourceAlreadyExistsException;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
 import ma.youcode.usac_last.usac.repository.ChildRepository;
 import ma.youcode.usac_last.usac.service.IChildService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
 import java.util.Optional;
 @Service
 @AllArgsConstructor
@@ -34,9 +35,10 @@ public class ChildServiceImpl implements IChildService {
     }
 
     @Override
-    public List<Child> getAllChildren() {
-        return childRepository.findAll();
+    public Page<Child> getAllChildren(Pageable pageable) {
+        return childRepository.findAll(pageable);
     }
+
 
     @Override
     public Optional<Child> getChildByName(String name) {
