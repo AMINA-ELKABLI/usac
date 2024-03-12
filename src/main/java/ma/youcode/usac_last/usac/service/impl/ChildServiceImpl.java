@@ -5,6 +5,7 @@ import ma.youcode.usac_last.usac.model.entities.Child;
 import ma.youcode.usac_last.usac.exception.InvalidDataException;
 import ma.youcode.usac_last.usac.exception.ResourceAlreadyExistsException;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
+import ma.youcode.usac_last.usac.model.enums.Status;
 import ma.youcode.usac_last.usac.repository.ChildRepository;
 import ma.youcode.usac_last.usac.service.IChildService;
 import org.springframework.data.domain.Page;
@@ -28,8 +29,8 @@ public class ChildServiceImpl implements IChildService {
             throw new InvalidDataException("Le nom et la date de naissance sont requis.");
         }
         int age = Period.between(child.getDateOfBirth(), LocalDate.now()).getYears();
-        if (age < 5 || age > 17) {
-            throw new InvalidDataException("L'âge de l'enfant doit être compris entre 5 et 18 ans.");
+        if (age < 6 || age > 18) {
+            throw new InvalidDataException("L'âge de l'enfant doit être compris entre 6 et 18 ans.");
         }
         return childRepository.save(child);
     }
@@ -56,5 +57,18 @@ public class ChildServiceImpl implements IChildService {
             throw new ResourceNotFoundException("Enfant introuvable avec l'ID : " + id);
         }
 
+    }
+
+    @Override
+    public Long countChild() {
+        return childRepository.count();
+    }
+
+    @Override
+    public Child updateChildStatus(Long id, Status status) {
+        Child child = childRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Child not found with ID: " + id));
+        child.setStatus(status);
+        return childRepository.save(child);
     }
 }

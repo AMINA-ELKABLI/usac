@@ -21,10 +21,7 @@ public class Match {
     private String location;
     private String type;
 
-    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Play> plays = new HashSet<>();
 
-    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MatchEquip> matchEquips = new HashSet<>();
+
 
 }

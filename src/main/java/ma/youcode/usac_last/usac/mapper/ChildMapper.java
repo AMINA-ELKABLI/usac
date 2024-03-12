@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring")
 public interface ChildMapper {
     Child toEntity(ChildCreateUpdateDTO childDto);
+
+    @Mapping(source = "status", target = "status")
     ChildResponseDTO toDTO(Child child);
 
-    @Mapping(target = "id", ignore = true)
-    Child childCreateUpdateDTOToChild(ChildCreateUpdateDTO createUpdateDTO);
+   // @Mapping(target = "id", ignore = true)
+   // Child childCreateUpdateDTOToChild(ChildCreateUpdateDTO createUpdateDTO);
 }

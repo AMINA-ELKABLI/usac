@@ -18,9 +18,6 @@ public class Equip {
     private String name;
     private String description;
 
-    @OneToMany(mappedBy = "equip", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "equips")
     private Set<Child> children = new HashSet<>();
-
-    @OneToMany(mappedBy = "equip", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MatchEquip> matchEquips = new HashSet<>();
 }

@@ -6,8 +6,10 @@ import ma.youcode.usac_last.usac.mapper.ChildMapper;
 import ma.youcode.usac_last.usac.model.dto.ChildCreateUpdateDTO;
 import ma.youcode.usac_last.usac.model.dto.Response.ChildResponseDTO;
 import ma.youcode.usac_last.usac.model.dto.Response.StockResponseDTO;
+import ma.youcode.usac_last.usac.model.dto.StatusUpdateDTO;
 import ma.youcode.usac_last.usac.model.entities.Child;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
+import ma.youcode.usac_last.usac.model.enums.Status;
 import ma.youcode.usac_last.usac.service.IChildService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -59,5 +61,14 @@ public class ChildController {
         childService.deleteChild(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ChildResponseDTO> updateChildStatus(@PathVariable Long id, @RequestBody StatusUpdateDTO statusUpdateDTO) {
+        Child updatedChild = childService.updateChildStatus(id, statusUpdateDTO.getStatus());
+        ChildResponseDTO responseDTO = childMapper.toDTO(updatedChild);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+
 
 }

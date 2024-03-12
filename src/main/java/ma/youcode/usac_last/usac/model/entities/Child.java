@@ -2,9 +2,13 @@ package ma.youcode.usac_last.usac.model.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ma.youcode.usac_last.usac.model.enums.Gender;
+import ma.youcode.usac_last.usac.model.enums.Status;
+
 
 import java.time.LocalDate;
 import java.util.HashSet;
+
 import java.util.Set;
 
 @Entity
@@ -19,16 +23,21 @@ public class Child {
     private Long id;
     private String name;
     private LocalDate dateOfBirth;
-    private String gender;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
     private String address;
     private String guardianName;
     private String guardianContact;
-    @ManyToMany(mappedBy = "children")
-    private Set<Play> plays = new HashSet<>();
-    @OneToMany(mappedBy = "child", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<MatchChild> matchChildren = new HashSet<>();
-    @ManyToOne
-    @JoinColumn(name = "equip_id")
-    private Equip equip;
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Status status= Status.PENDING;
+    @ManyToMany
+    @JoinTable(
+            name = "child_equip",
+            joinColumns = @JoinColumn(name = "child_id"),
+            inverseJoinColumns = @JoinColumn(name = "equip_id")
+    )
+    private Set<Equip> equips = new HashSet<>();
+
 
 }
