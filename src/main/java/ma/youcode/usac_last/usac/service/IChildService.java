@@ -14,7 +14,7 @@ import java.util.Optional;
         Page<Child> getAllChildren(Pageable pageable);
         Optional<Child>  getChildByName(String name);
         void deleteChild(Long id);
-        Long countChild();
+        long countChildrenByStatus(Status status);
         Child updateChildStatus(Long id, Status status);
 
     }

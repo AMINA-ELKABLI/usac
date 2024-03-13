@@ -68,6 +68,11 @@ public class ChildController {
         ChildResponseDTO responseDTO = childMapper.toDTO(updatedChild);
         return ResponseEntity.ok(responseDTO);
     }
+    @GetMapping("/count/accepted")
+    public ResponseEntity<Long> countAcceptedChildren() {
+        long count = childService.countChildrenByStatus(Status.ACCEPTED);
+        return ResponseEntity.ok(count);
+    }
 
 
 

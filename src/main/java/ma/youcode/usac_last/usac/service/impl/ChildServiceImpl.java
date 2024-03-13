@@ -60,9 +60,10 @@ public class ChildServiceImpl implements IChildService {
     }
 
     @Override
-    public Long countChild() {
-        return childRepository.count();
+    public long countChildrenByStatus(Status status) {
+        return childRepository.countByStatus(status);
     }
+
 
     @Override
     public Child updateChildStatus(Long id, Status status) {
