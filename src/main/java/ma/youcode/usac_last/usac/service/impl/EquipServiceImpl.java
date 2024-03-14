@@ -1,9 +1,12 @@
 package ma.youcode.usac_last.usac.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import ma.youcode.usac_last.usac.exception.InvalidDataException;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
+import ma.youcode.usac_last.usac.model.entities.Child;
 import ma.youcode.usac_last.usac.model.entities.Equip;
+import ma.youcode.usac_last.usac.repository.ChildRepository;
 import ma.youcode.usac_last.usac.repository.EquipRepository;
 import ma.youcode.usac_last.usac.service.IEquipService;
 import org.springframework.stereotype.Service;
@@ -14,6 +17,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class EquipServiceImpl implements IEquipService {
     private final EquipRepository equipRepository;
+    private final ChildRepository childRepository;
     @Override
     public Equip saveEquip(Equip equip) {
         if (equip.getName() == null || equip.getName().isEmpty()) {
@@ -71,5 +75,21 @@ public class EquipServiceImpl implements IEquipService {
     @Override
     public long getTotalEquips() {
         return equipRepository.count();
+    }
+
+    @Override
+    public Equip assignChildToEquip(Long childId, Long equipId) {
+        Child child = childRepository.findById(childId)
+                .orElseThrow(() -> new EntityNotFoundException("Child not found with id " + childId));
+        Equip equip = equipRepository.findById(equipId)
+                .orElseThrow(() -> new EntityNotFoundException("Equip not found with id " + equipId));
+
+        equip.getChildren().add(child);
+        child.getEquips().add(equip);
+
+        equipRepository.save(equip);
+        childRepository.save(child);
+
+        return equip;
     }
 }

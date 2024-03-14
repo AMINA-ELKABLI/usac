@@ -12,4 +12,5 @@ public interface IEquipService {
     void deleteEquip(Long id);
     Equip updateEquip(Equip equip);
     long getTotalEquips();
+    Equip assignChildToEquip(Long childId, Long equipId);
 }

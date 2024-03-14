@@ -5,6 +5,8 @@ import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
 import ma.youcode.usac_last.usac.model.entities.Match;
 import ma.youcode.usac_last.usac.repository.MatchRepository;
 import ma.youcode.usac_last.usac.service.IMatchService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +20,10 @@ public class MatchServiceImpl implements IMatchService {
         return matchRepository.save(match);
     }
 
+
     @Override
-    public List<Match> getAllMatch() {
-        return matchRepository.findAll();
+    public Page<Match> getAllMatch(Pageable pageable) {
+        return matchRepository.findAll(pageable);
     }
 
     @Override

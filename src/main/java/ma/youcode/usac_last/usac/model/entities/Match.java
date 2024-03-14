@@ -20,6 +20,8 @@ public class Match {
     private LocalDateTime matchDate;
     private String location;
     private String type;
+    @ManyToMany(mappedBy = "matches")
+    private Set<Equip> equips = new HashSet<>();
 
 
 

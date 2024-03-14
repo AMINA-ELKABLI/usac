@@ -67,4 +67,11 @@ public class EquipController {
         long totalEquips = equipService.getTotalEquips();
         return ResponseEntity.ok(totalEquips);
     }
+
+    @PostMapping("/equip/{equipId}/child/{childId}")
+    public ResponseEntity<?> assignChildToEquip(@PathVariable Long equipId, @PathVariable Long childId) {
+        Equip equip = equipService.assignChildToEquip(childId, equipId);
+        return ResponseEntity.ok(equip);
+
+    }
 }
