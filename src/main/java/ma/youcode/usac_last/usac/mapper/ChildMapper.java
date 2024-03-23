@@ -15,6 +15,5 @@ public interface ChildMapper {
     @Mapping(source = "status", target = "status")
     ChildResponseDTO toDTO(Child child);
 
-   // @Mapping(target = "id", ignore = true)
-   // Child childCreateUpdateDTOToChild(ChildCreateUpdateDTO createUpdateDTO);
+
 }

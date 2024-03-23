@@ -2,9 +2,12 @@ package ma.youcode.usac_last.usac.controller;
 
 import lombok.RequiredArgsConstructor;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
+import ma.youcode.usac_last.usac.mapper.ChildMapper;
 import ma.youcode.usac_last.usac.mapper.EquipMapper;
 import ma.youcode.usac_last.usac.model.dto.EquipCreateUpdateDTO;
+import ma.youcode.usac_last.usac.model.dto.Response.ChildResponseDTO;
 import ma.youcode.usac_last.usac.model.dto.Response.EquipResponseDTO;
+import ma.youcode.usac_last.usac.model.entities.Child;
 import ma.youcode.usac_last.usac.model.entities.Equip;
 import ma.youcode.usac_last.usac.service.IEquipService;
 import org.springframework.http.HttpStatus;
@@ -21,12 +24,14 @@ import java.util.stream.Collectors;
 public class EquipController {
     private final IEquipService equipService;
     private final EquipMapper equipMapper;
+    private final ChildMapper childMapper;
 
     @PostMapping
-    public ResponseEntity<EquipResponseDTO> saveEquip(@RequestBody @Validated EquipCreateUpdateDTO equipCreateUpdateDTO) {
-        Equip equip = equipMapper.toEntity(equipCreateUpdateDTO);
-        Equip savedEquip = equipService.saveEquip(equip);
+    public ResponseEntity<EquipResponseDTO> saveEquip(@RequestBody @Validated EquipCreateUpdateDTO equipDTO) {
+
+        Equip savedEquip = equipService.saveEquip(equipDTO);
         EquipResponseDTO equipResponseDTO = equipMapper.toDTO(savedEquip);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(equipResponseDTO);
     }
 
@@ -68,10 +73,17 @@ public class EquipController {
         return ResponseEntity.ok(totalEquips);
     }
 
-    @PostMapping("/equip/{equipId}/child/{childId}")
-    public ResponseEntity<?> assignChildToEquip(@PathVariable Long equipId, @PathVariable Long childId) {
-        Equip equip = equipService.assignChildToEquip(childId, equipId);
-        return ResponseEntity.ok(equip);
-
+    @GetMapping("/{equipId}/children")
+    public ResponseEntity<List<ChildResponseDTO>> getChildrenByEquipId(@PathVariable Long equipId) {
+        List<Child> children = equipService.findChildrenByEquipId(equipId);
+        List<ChildResponseDTO> childrenResponse = children.stream()
+                .map(childMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(childrenResponse);
     }
+
+
+
+
+
 }

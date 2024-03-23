@@ -74,6 +74,18 @@ public class ChildController {
         return ResponseEntity.ok(count);
     }
 
-
+    @GetMapping("/accepted")
+    public ResponseEntity<List<ChildResponseDTO>> getAcceptedChildren() {
+        List<Child> acceptedChildren = childService.getAcceptedChildren();
+        List<ChildResponseDTO> responseDTOs = acceptedChildren.stream()
+                .map(childMapper::toDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(responseDTOs);
+    }
 
 }
+
+
+
+
+

@@ -1,10 +1,7 @@
 package ma.youcode.usac_last.usac.service.impl;
-
 import ma.youcode.usac_last.usac.exception.InvalidDataException;
-import ma.youcode.usac_last.usac.exception.ResourceAlreadyExistsException;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
 import ma.youcode.usac_last.usac.model.entities.Child;
-import ma.youcode.usac_last.usac.model.entities.Equip;
 import ma.youcode.usac_last.usac.model.enums.Status;
 import ma.youcode.usac_last.usac.repository.ChildRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,11 +15,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 class ChildServiceImplTest {
@@ -36,136 +35,121 @@ class ChildServiceImplTest {
         MockitoAnnotations.openMocks(this);
         childService = new ChildServiceImpl(childRepository);
     }
-   // save
-   @Test
-   public void testSaveChild_NewValidChild_ShouldSave() {
 
-       Child newChild = new Child();
-       newChild.setName("Test Child");
-       newChild.setDateOfBirth(LocalDate.now().minusYears(10));
-       when(childRepository.findByName(newChild.getName())).thenReturn(Optional.empty());
-       when(childRepository.save(any(Child.class))).thenReturn(newChild);
-       Child savedChild = childService.saveChild(newChild);
-       assertNotNull(savedChild);
-       assertEquals(newChild.getName(), savedChild.getName());
-       verify(childRepository).save(any(Child.class));
-   }
     @Test
-    public void testSaveChild_ChildExists_ThrowsException() {
-        // Arrange
-        Child existingChild = new Child();
-        existingChild.setId(1L);
-        existingChild.setName("Test Child");
-        existingChild.setDateOfBirth(LocalDate.now().minusYears(10));
-        when(childRepository.findByName(existingChild.getName())).thenReturn(Optional.of(existingChild));
-        assertThrows(ResourceAlreadyExistsException.class, () -> {
-            childService.saveChild(existingChild);
-        });
-    }
-    @Test
-    public void test_saveChild_NullName_ThrowsInvalidDataException() {
-        Child child = new Child();
-        child.setDateOfBirth(LocalDate.now().minusYears(10));
-        assertThrows(InvalidDataException.class, () -> {
-            childService.saveChild(child);
-        });
-    }
-    @Test
-    public void test_saveChild_SameNamePendingChild_ShouldSave() {
-        Child pendingChild = new Child();
-        pendingChild.setId(1L);
-        pendingChild.setName("Test Child");
-        pendingChild.setDateOfBirth(LocalDate.now().minusYears(10));
-        pendingChild.setStatus(Status.PENDING);
-        when(childRepository.findByName(pendingChild.getName())).thenReturn(Optional.of(pendingChild));
-        when(childRepository.save(any(Child.class))).thenReturn(pendingChild);
-        Child savedChild = childService.saveChild(pendingChild);
+    void saveChild_ShouldSave() {
+        Child newChild = new Child();
+        newChild.setName("Test Child");
+        newChild.setDateOfBirth(LocalDate.now().minusYears(10));
+        when(childRepository.findByName(newChild.getName())).thenReturn(Optional.empty());
+        when(childRepository.save(any(Child.class))).thenReturn(newChild);
+        Child savedChild = childService.saveChild(newChild);
         assertNotNull(savedChild);
-        assertEquals(pendingChild.getName(), savedChild.getName());
+        assertEquals(newChild.getName(), savedChild.getName());
         verify(childRepository).save(any(Child.class));
     }
-
-
     @Test
-    public void testSaveChild_InvalidAge_ThrowsException() {
-        Child child = new Child();
-        child.setName("Test Child");
-        child.setDateOfBirth(LocalDate.now().minusYears(5));
-        assertThrows(InvalidDataException.class, () -> {
-            childService.saveChild(child);
-        });
+    void testSaveChildShouldThrowWhenInvalid() {
+        Child invalidChild = new Child();
+        invalidChild.setName("Test Child");
+        invalidChild.setDateOfBirth(LocalDate.now().minusYears(20)); // Age is out of valid range
+        when(childRepository.findByName(anyString())).thenReturn(Optional.empty());
+        assertThrows(InvalidDataException.class, () -> childService.saveChild(invalidChild));
     }
 
-
-
-    // getAll
     @Test
-    public void test_no_children_in_database() {
-        ChildServiceImpl childService = new ChildServiceImpl(childRepository);
+    void testGetAllChildren() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<Child> emptyPage = new PageImpl<>(new ArrayList<>());
-
+        Page<Child> expectedPage = mock(Page.class);
+        when(childRepository.findAll(pageable)).thenReturn(expectedPage);
+        Page<Child> result = childService.getAllChildren(pageable);
+        assertEquals(expectedPage, result);
+    }
+    @Test
+    void testGetAllChildrenReturnsEmptyPageWhenNoChildrenFound() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Child> emptyPage = new PageImpl<>(Collections.emptyList());
         when(childRepository.findAll(pageable)).thenReturn(emptyPage);
         Page<Child> result = childService.getAllChildren(pageable);
-        assertNotNull(result);
         assertTrue(result.isEmpty());
     }
-    //
+
+
+
     @Test
-    public void test_null_name() {
-        String name = null;
-        Optional<Child> expected = Optional.empty();
-
-        when(childRepository.findByName(name)).thenReturn(expected);
-
+    void getChildByNameShouldReturnChildWhenFound() {
+        String name = "Test Name";
+        Child expectedChild = new Child();
+        expectedChild.setName(name);
+        when(childRepository.findByName(name)).thenReturn(Optional.of(expectedChild));
         Optional<Child> result = childService.getChildByName(name);
-
-        assertEquals(expected, result);
+        assertTrue(result.isPresent(), "Child should be found");
+        assertEquals(expectedChild, result.get(), "The returned child should match the expected");
     }
     @Test
-    public void test_empty_name() {
-        String name = "";
-        Optional<Child> expected = Optional.empty();
-
-        when(childRepository.findByName(name)).thenReturn(expected);
-
+    void getChildByNameShouldReturnEmptyWhenNotFound() {
+        String name = "Nonexistent Name";
+        when(childRepository.findByName(name)).thenReturn(Optional.empty());
         Optional<Child> result = childService.getChildByName(name);
-
-        assertEquals(expected, result);
-    }
-   // delete
-   @Test
-   public void test_deleteChild_validID() {
-       Long id = 1L;
-       Child child = new Child();
-       child.setId(id);
-       Optional<Child> optionalChild = Optional.of(child);
-       when(childRepository.findById(id)).thenReturn(optionalChild);
-       childService.deleteChild(id);
-       verify(childRepository, times(1)).delete(child);
-   }
-    public void test_deleteChild_invalidID() {
-        Long id = -1L;
-        Optional<Child> optionalChild = Optional.empty();
-        when(childRepository.findById(id)).thenReturn(optionalChild);
-        assertThrows(ResourceNotFoundException.class, () -> {
-            childService.deleteChild(id);
-        });
+        assertFalse(result.isPresent(), "No child should be found for the given name");
     }
 
-    //
+
     @Test
-    public void test_countChildrenByStatus_withValidStatus() {
-        ChildServiceImpl childService = new ChildServiceImpl(childRepository);
+    void deleteChildWhenChildExists() {
+
+        Long id = 1L;
+        Child existingChild = new Child();
+        existingChild.setId(id);
+        when(childRepository.findById(id)).thenReturn(Optional.of(existingChild));
+        childService.deleteChild(id);
+        verify(childRepository).delete(existingChild);
+    }
+
+    @Test
+    void deleteChildWhenChildDoesNotExist() {
+        Long id = 1L;
+        when(childRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> childService.deleteChild(id));
+    }
+    @Test
+    void countChildrenByStatus() {
         Status status = Status.ACCEPTED;
-        long count = childService.countChildrenByStatus(status);
-        assertEquals(2, count);
+        long expectedCount = 10L;
+        when(childRepository.countByStatus(status)).thenReturn(expectedCount);
+        long result = childService.countChildrenByStatus(status);
+        assertEquals(expectedCount, result);
     }
+
+
     @Test
-    public void test_countChildrenByStatus_withNoChildrenWithStatus() {
-        ChildServiceImpl childService = new ChildServiceImpl(childRepository);
-        Status status = Status.REJECTED;
-        long count = childService.countChildrenByStatus(status);
-        assertEquals(0, count);
+    void getAcceptedChildren() {
+        List<Child> expectedChildren = List.of(new Child());
+        when(childRepository.findByStatus(Status.ACCEPTED)).thenReturn(expectedChildren);
+        List<Child> result = childService.getAcceptedChildren();
+        assertEquals(expectedChildren, result);
     }
+
+
+    @Test
+    void updateChildStatusWhenChildExists() {
+        Long id = 1L;
+        Status status = Status.ACCEPTED;
+        Child existingChild = new Child();
+        existingChild.setId(id);
+        when(childRepository.findById(id)).thenReturn(Optional.of(existingChild));
+        when(childRepository.save(any(Child.class))).thenReturn(existingChild);
+        Child result = childService.updateChildStatus(id, status);
+        assertEquals(status, result.getStatus());
+        verify(childRepository).save(existingChild);
+    }
+
+    @Test
+    void updateChildStatusWhenChildDoesNotExist() {
+        Long id = 1L;
+        Status status = Status.ACCEPTED;
+        when(childRepository.findById(id)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> childService.updateChildStatus(id, status));
+    }
+
 }

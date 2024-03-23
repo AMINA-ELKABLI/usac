@@ -1,0 +1,13 @@
+version: '3'
+services:
+  usac_last:
+    image: usac_last:v1
+    container_name: usac_last
+    restart: on-failure
+    build:
+      context: ./USAC_LAST
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod

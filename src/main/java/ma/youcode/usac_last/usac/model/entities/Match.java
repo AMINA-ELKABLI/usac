@@ -1,5 +1,9 @@
 package ma.youcode.usac_last.usac.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +24,13 @@ public class Match {
     private LocalDateTime matchDate;
     private String location;
     private String type;
-    @ManyToMany(mappedBy = "matches")
+    @ManyToMany
+    @JoinTable(
+            name = "equip_match",
+            joinColumns = @JoinColumn(name = "match_id"),
+            inverseJoinColumns = @JoinColumn(name = "equip_id")
+    )
+    @JsonManagedReference
     private Set<Equip> equips = new HashSet<>();
 
 

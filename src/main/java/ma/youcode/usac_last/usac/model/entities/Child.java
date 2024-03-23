@@ -1,5 +1,6 @@
 package ma.youcode.usac_last.usac.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import ma.youcode.usac_last.usac.model.enums.Gender;
@@ -31,13 +32,8 @@ public class Child {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Status status= Status.PENDING;
-    @ManyToMany
-    @JoinTable(
-            name = "child_equip",
-            joinColumns = @JoinColumn(name = "child_id"),
-            inverseJoinColumns = @JoinColumn(name = "equip_id")
-    )
-    private Set<Equip> equips = new HashSet<>();
 
+    @ManyToMany(mappedBy = "children",fetch = FetchType.LAZY)
+    private Set<Equip> equips = new HashSet<>();
 
 }

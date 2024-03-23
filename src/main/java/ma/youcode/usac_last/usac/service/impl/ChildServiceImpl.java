@@ -14,7 +14,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class ChildServiceImpl implements IChildService {
@@ -43,6 +46,7 @@ public class ChildServiceImpl implements IChildService {
 
     @Override
     public Optional<Child> getChildByName(String name) {
+
         return childRepository.findByName(name);
     }
 
@@ -62,6 +66,11 @@ public class ChildServiceImpl implements IChildService {
     @Override
     public long countChildrenByStatus(Status status) {
         return childRepository.countByStatus(status);
+    }
+
+    @Override
+    public List<Child> getAcceptedChildren() {
+        return childRepository.findByStatus(Status.ACCEPTED);
     }
 
 

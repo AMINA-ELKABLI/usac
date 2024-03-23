@@ -3,50 +3,61 @@ package ma.youcode.usac_last.usac.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import ma.youcode.usac_last.usac.exception.InvalidDataException;
+import ma.youcode.usac_last.usac.exception.ResourceAlreadyExistsException;
 import ma.youcode.usac_last.usac.exception.ResourceNotFoundException;
+import ma.youcode.usac_last.usac.model.dto.EquipCreateUpdateDTO;
 import ma.youcode.usac_last.usac.model.entities.Child;
 import ma.youcode.usac_last.usac.model.entities.Equip;
+import ma.youcode.usac_last.usac.model.enums.Status;
 import ma.youcode.usac_last.usac.repository.ChildRepository;
 import ma.youcode.usac_last.usac.repository.EquipRepository;
+import ma.youcode.usac_last.usac.repository.MatchRepository;
 import ma.youcode.usac_last.usac.service.IEquipService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class EquipServiceImpl implements IEquipService {
     private final EquipRepository equipRepository;
     private final ChildRepository childRepository;
+    private final MatchRepository matchRepository;
     @Override
-    public Equip saveEquip(Equip equip) {
-        if (equip.getName() == null || equip.getName().isEmpty()) {
-            throw new InvalidDataException("Le nom de l'équipement ne peut pas être vide.");
+    public Equip saveEquip(EquipCreateUpdateDTO equipDTO) {
+        if (equipRepository.existsByName(equipDTO.getName())) {
+            throw new ResourceAlreadyExistsException("Une équipe avec le même nom existe déjà.");
         }
 
-        if (equip.getDescription() == null || equip.getDescription().isEmpty()) {
-            throw new InvalidDataException("La description de l'équipement ne peut pas être vide.");
+        Set<Child> children = new HashSet<>();
+        if (equipDTO.getChildIds() != null && !equipDTO.getChildIds().isEmpty()) {
+            List<Long> childIds = equipDTO.getChildIds();
+             List<Child> foundChildren = childRepository.findAllById(childIds);
+             children = foundChildren.stream().filter(child -> child.getStatus() == Status.ACCEPTED)
+                     .collect(Collectors.toSet());
+            if (children.size() != childIds.size()) {
+                throw new InvalidDataException("Un ou plusieurs enfants spécifiés n'existent pas.");
+            }
         }
 
+        Equip equip = new Equip();
+        equip.setName(equipDTO.getName());
+        equip.setDescription(equipDTO.getDescription());
+        equip.setChildren(children);
         return equipRepository.save(equip);
     }
-
     @Override
     public List<Equip> getAllEquips() {
-
         return equipRepository.findAll();
     }
-
     @Override
     public Optional<Equip> getEquipByName(String name) {
-
-
         Optional<Equip> equipOptional = equipRepository.findByName(name);
-
         if (equipOptional.isEmpty()) {
             throw new IllegalArgumentException("Aucun équipement trouvé avec le nom : " + name);
         }
-
         return equipOptional;
     }
 
@@ -65,31 +76,23 @@ public class EquipServiceImpl implements IEquipService {
         String equipName = equip.getName();
         Equip existingEquip = equipRepository.findByName(equipName)
                 .orElseThrow(() -> new ResourceNotFoundException("Équipement introuvable avec l'ID : " + equipName));
-
         existingEquip.setName(equip.getName());
         existingEquip.setDescription(equip.getDescription());
-
         return equipRepository.save(existingEquip);
     }
 
     @Override
     public long getTotalEquips() {
+
         return equipRepository.count();
     }
 
     @Override
-    public Equip assignChildToEquip(Long childId, Long equipId) {
-        Child child = childRepository.findById(childId)
-                .orElseThrow(() -> new EntityNotFoundException("Child not found with id " + childId));
+    public List<Child> findChildrenByEquipId(Long equipId) {
         Equip equip = equipRepository.findById(equipId)
-                .orElseThrow(() -> new EntityNotFoundException("Equip not found with id " + equipId));
-
-        equip.getChildren().add(child);
-        child.getEquips().add(equip);
-
-        equipRepository.save(equip);
-        childRepository.save(child);
-
-        return equip;
+                .orElseThrow(() -> new ResourceNotFoundException("Equip not found with id: " + equipId));
+        return new ArrayList<>(equip.getChildren());
     }
+
+
 }
